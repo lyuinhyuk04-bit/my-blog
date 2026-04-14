@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fingerprint Insight | Biometric Research</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<!-- Markdown Parsing & Highlighting -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+body { background-color: #ffffff; color: #1e293b; font-family: 'Manrope', sans-serif; overflow-x: hidden; }
+</style>
+</head>
+<body class="bg-white text-slate-900">
+
+<!-- 2. 왼쪽 사이드바 유지 -->
+<nav class="fixed left-0 h-full w-72 z-40 bg-slate-50 border-r border-slate-200 shadow-sm flex flex-col justify-between py-10 px-6 font-['Space_Grotesk'] tracking-tight">
+  <div class="space-y-10">
+    <div class="flex flex-col items-center text-center space-y-6">
+      <div class="w-24 h-24 rounded-full overflow-hidden shadow-sm border border-slate-200 bg-white flex items-center justify-center">
+        <span class="material-symbols-outlined text-blue-600" style="font-size: 3.5rem;">fingerprint</span>
+      </div>
+      <div>
+        <h2 class="text-xl font-bold text-slate-900 leading-tight">Fingerprint Insight</h2>
+        <p class="text-[11px] text-slate-500 font-medium tracking-widest uppercase mt-1">Biometric Journal</p>
+      </div>
+    </div>
+    
+    <div class="space-y-2">
+      <!-- 사이드바 단일 버튼 (목록) -->
+      <a href="#list" class="flex items-center gap-4 py-3 px-4 rounded-lg bg-blue-50 text-blue-600 border-l-4 border-blue-600 transition-all font-semibold shadow-sm">
+        <span class="material-symbols-outlined">menu_book</span>
+        <span>Research Logs</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- 상단 헤더 -->
+<header class="fixed top-0 right-0 w-[calc(100%-18rem)] z-30 bg-white/90 backdrop-blur-md border-b border-slate-200 flex justify-between items-center h-20 px-12">
+  <div class="flex items-center gap-8">
+    <h1 class="text-2xl font-black text-slate-800 font-headline tracking-tighter" id="topbar-title">Fingerprint Insight Archive</h1>
+  </div>
+  <div class="flex items-center bg-slate-50 rounded-full px-4 py-1.5 border border-slate-200 shadow-inner">
+      <input class="bg-transparent border-none focus:ring-0 text-xs w-48 text-slate-800 placeholder:text-slate-400" placeholder="Search Fingerprint Data..." type="text"/>
+      <span class="material-symbols-outlined text-slate-400">search</span>
+  </div>
+</header>
+
+<main class="ml-72 pt-[6.5rem] min-h-screen">
+  <div class="max-w-[1200px] mx-auto p-12 space-y-4">
+    
+    <!-- 3. 오른쪽 영역 블로그 글 목록 (기본 화면) -->
+    <div id="list-view" class="fade-in">
+      <section class="mb-10 border-b border-slate-100 pb-6 flex items-end justify-between">
+        <div>
+           <h2 class="text-4xl font-headline font-bold tracking-tighter text-slate-900 mb-2">Fingerprint Publications</h2>
+           <p class="text-slate-500 font-body text-base">Comprehensive collection of 50 specialized biometric studies.</p>
+        </div>
+        <div class="text-[10px] bg-blue-50 text-blue-600 font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-blue-100">
+           Updated 2024
+        </div>
+      </section>
+      
+      <!-- 글 목록(50개) 렌더링 컨테이너 -->
+      <div id="post-list-container" class="flex flex-col gap-4 pb-20"></div>
+    </div>
+
+    <!-- 4. 글 클릭 시 상세 페이지 영역 -->
+    <div id="post-view" class="hidden fade-in">
+      <a href="#list" class="inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 font-headline text-sm font-bold uppercase tracking-widest group/btn mb-8 transition-colors">
+        <span class="material-symbols-outlined group-hover/btn:-translate-x-1 transition-transform">arrow_back</span>
+        Return to Research Logs
+      </a>
+      
+      <!-- 상세 뷰 포맷 -->
+      <div id="post-content-container" class="bg-white rounded-xl border border-slate-200 p-12 shadow-sm max-w-4xl pb-16"></div>
+    </div>
+
+  </div>
+</main>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

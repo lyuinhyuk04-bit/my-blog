@@ -1,165 +1,84 @@
-// Elements
-const viewContainer = document.getElementById('view-container');
-const navItems = document.querySelectorAll('.nav-item[data-target]');
+const listView = document.getElementById('list-view');
+const postView = document.getElementById('post-view');
+const postListContainer = document.getElementById('post-list-container');
+const postContentContainer = document.getElementById('post-content-container');
+const topbarTitle = document.getElementById('topbar-title');
 
-// Initial state
-let currentView = 'home';
-
-// Router basic logic
 function handleRouting() {
-  const hash = window.location.hash || '#home';
-  
+  // 거추장스러운 home 분기를 없애고, 기본 진입점을 list로 설정합니다.
+  const hash = window.location.hash || '#list';
+
+  // 숨김 초기화
+  listView.classList.add('hidden');
+  postView.classList.add('hidden');
+
   if (hash.startsWith('#post/')) {
     const postId = hash.split('/')[1];
+    postView.classList.remove('hidden');
+    topbarTitle.innerText = "Detailed Post";
     renderPost(postId);
-    updateNav(null); // Clear active nav on post
-  } else if (hash === '#about') {
-    renderAbout();
-    updateNav('about');
   } else {
-    renderHome();
-    updateNav('home');
+    listView.classList.remove('hidden');
+    topbarTitle.innerText = "Research Logs";
+    if (!postListContainer.hasChildNodes()) {
+      renderList();
+    }
   }
+
+  window.scrollTo({ top: 0, behavior: 'auto' });
 }
 
-function updateNav(target) {
-  navItems.forEach(item => {
-    if (item.getAttribute('data-target') === target) {
-      item.classList.add('active');
-    } else {
-      item.classList.remove('active');
-    }
-  });
-}
-
-// Navigation event listeners
-navItems.forEach(item => {
-  item.addEventListener('click', (e) => {
-    const target = item.getAttribute('data-target');
-    if (target) {
-      e.preventDefault();
-      window.location.hash = target === 'home' ? '' : target;
-    }
-  });
-});
-
-// Window hash change listener
-window.addEventListener('hashchange', handleRouting);
-
-// View Renderers
-function renderHome() {
-  let html = `
-    <div class="fade-in">
-      <h2 style="font-size: 2rem; margin-bottom: 2rem; color: #fff; font-weight: 800;">최신 포스팅</h2>
-      <div class="post-list">
-  `;
-  
-  // From data.js
-  blogPosts.forEach((post, index) => {
+function renderList() {
+  let html = '';
+  blogPosts.forEach(post => {
     html += `
-      <a href="#post/${post.id}" class="post-card" style="animation-delay: ${index * 0.1}s">
-        <div class="post-meta">
-          <span>📅 ${post.date}</span>
-        </div>
-        <h3 class="post-title">${post.title}</h3>
-        <div class="post-tags">
-          ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-        </div>
-      </a>
-    `;
+        <a href="#post/${post.id}" class="group bg-white hover:bg-slate-50 rounded-xl p-6 border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-6 transition-all shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-md cursor-pointer">
+            <div class="flex items-center gap-6 flex-1 w-full">
+                <div class="hidden md:flex w-12 h-12 bg-blue-50 rounded-xl items-center justify-center flex-shrink-0 border border-blue-100">
+                    <span class="material-symbols-outlined text-blue-600">fingerprint</span>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-1">
+                         <span class="text-[10px] text-blue-600 font-bold tracking-widest uppercase bg-blue-50 border border-blue-100 px-2 py-0.5 rounded">Log ${String(post.index).padStart(2, '0')}</span>
+                         <span class="text-[11px] text-slate-400 font-medium">${post.date}</span>
+                    </div>
+                    <h3 class="text-xl font-headline font-bold text-slate-900 group-hover:text-blue-600 transition-colors mb-2">${post.title}</h3>
+                    <p class="text-sm text-slate-500 font-body line-clamp-2 leading-relaxed">${post.description}</p>
+                </div>
+            </div>
+            <div class="flex-shrink-0 hidden md:block">
+               <div class="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-blue-50 flex items-center justify-center transition-colors">
+                  <span class="material-symbols-outlined text-slate-400 group-hover:text-blue-600 text-sm">arrow_forward</span>
+               </div>
+            </div>
+        </a>
+        `;
   });
-  
-  html += `
-      </div>
-    </div>
-  `;
-  
-  viewContainer.innerHTML = html;
+  postListContainer.innerHTML = html;
 }
 
 function renderPost(postId) {
   const post = blogPosts.find(p => p.id === postId);
-  
   if (!post) {
-    viewContainer.innerHTML = `
-      <div class="fade-in" style="text-align:center; padding: 5rem 0;">
-        <h2>포스트를 찾을 수 없습니다. 😢</h2>
-        <a href="#" class="back-btn" style="justify-content:center; margin-top:2rem;">
-          돌아가기
-        </a>
-      </div>
-    `;
+    postContentContainer.innerHTML = `<h2 class="text-2xl font-bold font-headline text-slate-900">Post not found.</h2>`;
     return;
   }
-  
-  const rawHtml = marked.parse(post.content);
-  
-  let html = `
-    <div class="fade-in">
-      <a href="#" class="back-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-        목록으로 돌아가기
-      </a>
-      
-      <div class="post-header-view">
-        <div class="post-meta" style="justify-content:center; margin-bottom: 1rem;">
-          <span>📅 ${post.date}</span>
+
+  postContentContainer.innerHTML = `
+        <div class="mb-10 border-b border-slate-200 pb-8">
+           <span class="inline-block px-3 py-1 bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-bold tracking-widest uppercase mb-4 rounded-full">Fingerprint Research ${String(post.index).padStart(2, '0')}</span>
+           <h1 class="text-4xl font-headline font-extrabold text-slate-900 mb-4 leading-tight">${post.title}</h1>
+           <p class="text-slate-500 text-sm font-medium">Published on ${post.date}</p>
         </div>
-        <h1>${post.title}</h1>
-        <div class="post-tags" style="justify-content:center;">
-          ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+        <div class="tailwind-markdown-body">
+            ${marked.parse(post.content)}
         </div>
-      </div>
-      
-      <div class="markdown-body">
-        ${rawHtml}
-      </div>
-    </div>
-  `;
-  
-  viewContainer.innerHTML = html;
-  
-  // Highlight JS execution
-  if(window.Prism) {
+    `;
+
+  if (window.Prism) {
     Prism.highlightAll();
   }
 }
 
-function renderAbout() {
-  const aboutMd = `
-# 👋 About Me
-
-안녕하세요! 컴퓨터소프트웨어학과 1학년 **류인혁**입니다.
-
-새로운 것을 배우고 만들어나가는 과정을 즐깁니다. 
-지금은 기초 전공과목을 수강하며 프로그래밍의 기본기를 다지고 있고, 
-개인적으로 프론트엔드 웹 개발(UI/UX, 모던 프레임워크)에 깊은 관심을 두고 있습니다.
-
-## 🎯 Goals
-- 매일매일 배운 것을 잊지 않기 위해 기록하기
-- 의미 있는 사이드 프로젝트 스크래치부터 완성해보기
-- 함께 성장할 개발자 동료 만들기
-
-## 🛠 Skills (Learning)
-- C, Python, JavaScript
-- HTML/CSS
-- React.js (Upcoming)
-
-이 블로그에 방문해주셔서 감사합니다!
-  `;
-  
-  const rawHtml = marked.parse(aboutMd);
-  
-  viewContainer.innerHTML = `
-    <div class="fade-in">
-      <div class="markdown-body">
-        ${rawHtml}
-      </div>
-    </div>
-  `;
-}
-
-// Initial render
-document.addEventListener('DOMContentLoaded', () => {
-  handleRouting();
-});
+window.addEventListener('hashchange', handleRouting);
+document.addEventListener('DOMContentLoaded', handleRouting);
